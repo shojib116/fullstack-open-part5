@@ -2,7 +2,7 @@ import { useState } from "react";
 import loginServices from "../services/login";
 import blogServices from "../services/blogs";
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = ({ setUser, setNotification, discardNotification }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,14 +16,22 @@ const LoginForm = ({ setUser }) => {
       setUser(user);
       setUsername("");
       setPassword("");
+      setNotification({
+        message: `logged in as ${user.name}`,
+        status: "success",
+      });
+      discardNotification();
     } catch (error) {
-      console.log(error);
+      setNotification({
+        message: error.response.data.error,
+        status: "error",
+      });
+      discardNotification();
     }
   };
 
   return (
     <>
-      <h2>log in to application</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="username">username</label>
         <input

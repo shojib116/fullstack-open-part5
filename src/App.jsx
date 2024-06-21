@@ -3,10 +3,15 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState({
+    message: null,
+    status: null,
+  });
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -28,10 +33,27 @@ const App = () => {
     window.localStorage.removeItem("user");
   };
 
+  const discardNotification = () => {
+    setTimeout(() => {
+      setNotification({ message: null, status: null });
+    }, 5000);
+  };
+
   if (user === null) {
     return (
       <div>
-        <LoginForm setUser={setUser} />
+        <h2>log in to application</h2>
+        {notification.message && (
+          <Notification
+            message={notification.message}
+            status={notification.status}
+          />
+        )}
+        <LoginForm
+          setUser={setUser}
+          setNotification={setNotification}
+          discardNotification={discardNotification}
+        />
       </div>
     );
   }
@@ -39,11 +61,22 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      {notification.message && (
+        <Notification
+          message={notification.message}
+          status={notification.status}
+        />
+      )}
       <p>
         {user.name} logged in{" "}
         <input type="button" value="logout" onClick={handleLogout} />
       </p>
-      <NewBlogForm blogs={blogs} setBlogs={setBlogs} />
+      <NewBlogForm
+        blogs={blogs}
+        setBlogs={setBlogs}
+        setNotification={setNotification}
+        discardNotification={discardNotification}
+      />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
