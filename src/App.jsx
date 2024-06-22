@@ -76,6 +76,19 @@ const App = () => {
     }
   };
 
+  const deleteBlog = async (blogId) => {
+    try {
+      await blogService.deleteBlog(blogId);
+      setBlogs(blogs.filter((blog) => blog.id !== blogId));
+    } catch (error) {
+      setNotification({
+        message: error.response.data.error,
+        status: "error",
+      });
+      discardNotification();
+    }
+  };
+
   const handleLogout = (event) => {
     event.preventDefault();
 
@@ -119,7 +132,13 @@ const App = () => {
         <NewBlogForm createNew={createNew} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} increaseLikes={increaseLikes} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          increaseLikes={increaseLikes}
+          deleteBlog={deleteBlog}
+          username={user.username}
+        />
       ))}
     </div>
   );

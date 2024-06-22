@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({ blog, increaseLikes }) => {
+const Blog = ({ blog, increaseLikes, deleteBlog, username }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const handleLikes = async () => {
@@ -12,6 +12,12 @@ const Blog = ({ blog, increaseLikes }) => {
       likes: blog.likes + 1,
     };
     await increaseLikes(updatedBlog, blog.id);
+  };
+
+  const handleDeletion = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await deleteBlog(blog.id);
+    }
   };
 
   const blogStyle = {
@@ -39,6 +45,10 @@ const Blog = ({ blog, increaseLikes }) => {
           <input type="button" value="like" onClick={handleLikes} />
           <br />
           {blog.user.name}
+          <br />
+          {username === blog.user.username && (
+            <input type="button" value="remove" onClick={handleDeletion} />
+          )}
         </div>
       )}
     </div>
