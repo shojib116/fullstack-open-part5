@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
+import loginService from "./services/login";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
@@ -89,6 +90,26 @@ const App = () => {
     }
   };
 
+  const handleLogin = async (userObject) => {
+    try {
+      const user = await loginService.login(userObject);
+      window.localStorage.setItem("user", JSON.stringify(user));
+      blogService.setToken(user.token);
+      setUser(user);
+      setNotification({
+        message: `logged in as ${user.name}`,
+        status: "success",
+      });
+      discardNotification();
+    } catch (error) {
+      setNotification({
+        message: error.response.data.error,
+        status: "error",
+      });
+      discardNotification();
+    }
+  };
+
   const handleLogout = (event) => {
     event.preventDefault();
 
@@ -106,11 +127,7 @@ const App = () => {
             status={notification.status}
           />
         )}
-        <LoginForm
-          setUser={setUser}
-          setNotification={setNotification}
-          discardNotification={discardNotification}
-        />
+        <LoginForm handleLogin={handleLogin} />
       </div>
     );
   }
