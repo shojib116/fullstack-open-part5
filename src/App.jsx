@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,6 +13,8 @@ const App = () => {
     message: null,
     status: null,
   });
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -26,17 +29,37 @@ const App = () => {
     }
   }, []);
 
+  const discardNotification = () => {
+    setTimeout(() => {
+      setNotification({ message: null, status: null });
+    }, 5000);
+  };
+
+  const createNew = async (blog) => {
+    blogFormRef.current.toggleVisibility();
+
+    try {
+      const createdBlog = await blogService.create(blog);
+      setBlogs(blogs.concat(createdBlog));
+      setNotification({
+        message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+        status: "success",
+      });
+      discardNotification();
+    } catch (error) {
+      setNotification({
+        message: error.response.data.error,
+        status: "error",
+      });
+      discardNotification();
+    }
+  };
+
   const handleLogout = (event) => {
     event.preventDefault();
 
     setUser(null);
     window.localStorage.removeItem("user");
-  };
-
-  const discardNotification = () => {
-    setTimeout(() => {
-      setNotification({ message: null, status: null });
-    }, 5000);
   };
 
   if (user === null) {
@@ -71,12 +94,9 @@ const App = () => {
         {user.name} logged in{" "}
         <input type="button" value="logout" onClick={handleLogout} />
       </p>
-      <NewBlogForm
-        blogs={blogs}
-        setBlogs={setBlogs}
-        setNotification={setNotification}
-        discardNotification={discardNotification}
-      />
+      <Togglable buttonLabel="create new" ref={blogFormRef}>
+        <NewBlogForm createNew={createNew} />
+      </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
