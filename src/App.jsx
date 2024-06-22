@@ -55,6 +55,25 @@ const App = () => {
     }
   };
 
+  const increaseLikes = async (updatedBlog, blogId) => {
+    try {
+      const response = await blogService.updateLikes(updatedBlog, blogId);
+      setBlogs(
+        blogs.map((blog) => {
+          if (blog.id === response.id)
+            return { ...blog, likes: response.likes };
+          return blog;
+        })
+      );
+    } catch (error) {
+      setNotification({
+        message: error.response.data.error,
+        status: "error",
+      });
+      discardNotification();
+    }
+  };
+
   const handleLogout = (event) => {
     event.preventDefault();
 
@@ -98,7 +117,7 @@ const App = () => {
         <NewBlogForm createNew={createNew} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} increaseLikes={increaseLikes} />
       ))}
     </div>
   );

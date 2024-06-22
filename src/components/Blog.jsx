@@ -1,7 +1,18 @@
 import { useState } from "react";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, increaseLikes }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  const handleLikes = async () => {
+    const updatedBlog = {
+      user: blog.user.id,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+    };
+    await increaseLikes(updatedBlog, blog.id);
+  };
 
   const blogStyle = {
     paddingTop: 10,
@@ -24,7 +35,8 @@ const Blog = ({ blog }) => {
         <div>
           {blog.url}
           <br />
-          likes {blog.likes} <input type="button" value="like" />
+          likes {blog.likes}{" "}
+          <input type="button" value="like" onClick={handleLikes} />
           <br />
           {blog.user.name}
         </div>
