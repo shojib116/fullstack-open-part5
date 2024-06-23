@@ -30,7 +30,7 @@ const Blog = ({ blog, increaseLikes, deleteBlog, username }) => {
   };
   return (
     <div style={blogStyle}>
-      <div>
+      <div className="blogSummary">
         {blog.title} - {blog.author}{" "}
         <input
           type="button"
@@ -39,7 +39,7 @@ const Blog = ({ blog, increaseLikes, deleteBlog, username }) => {
         />
       </div>
       {showDetails && (
-        <div>
+        <div className="blogDetails">
           {blog.url}
           <br />
           likes {blog.likes}{" "}
