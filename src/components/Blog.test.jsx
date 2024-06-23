@@ -40,6 +40,10 @@ describe("<Blog /> component", () => {
 
     await userEvent.click(button);
 
+    //checking if button value is changed to hide
+    expect(button).toHaveValue("hide");
+
+    //checking that blog details is rendered properly
     const details = container.querySelector(".blogDetails");
     expect(details).toBeDefined();
     expect(details).toHaveTextContent(blog.url);
