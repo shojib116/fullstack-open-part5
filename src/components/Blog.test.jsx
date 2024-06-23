@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import Blog from "./Blog";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test } from "vitest";
@@ -49,5 +49,23 @@ describe("<Blog /> component", () => {
     expect(details).toHaveTextContent(blog.url);
     expect(details).toHaveTextContent(`likes ${blog.likes}`);
     expect(details).toHaveTextContent(blog.user.name);
+  });
+
+  test("if clicked twice, 2 clicks are registered", async () => {
+    const increaseLikes = vi.fn();
+
+    cleanup();
+    render(<Blog blog={blog} increaseLikes={increaseLikes} />);
+
+    const viewButton = screen.getByText("view");
+
+    await userEvent.click(viewButton);
+
+    const likeButton = screen.getByText("like");
+
+    await userEvent.click(likeButton);
+    await userEvent.click(likeButton);
+
+    expect(increaseLikes.mock.calls).toHaveLength(2);
   });
 });
