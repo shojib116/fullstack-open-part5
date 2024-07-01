@@ -40,12 +40,14 @@ const Blog = ({ blog, increaseLikes, deleteBlog, username }) => {
       </div>
       {showDetails && (
         <div className="blogDetails">
-          {blog.url}
+          <span>{blog.url}</span>
           <br />
-          likes {blog.likes}{" "}
-          <input type="button" value="like" onClick={handleLikes} />
+          <span>
+            likes {blog.likes}{" "}
+            <input type="button" value="like" onClick={handleLikes} />
+          </span>
           <br />
-          {blog.user.name}
+          <span>{blog.user.name}</span>
           <br />
           {username === blog.user.username && (
             <input type="button" value="remove" onClick={handleDeletion} />
